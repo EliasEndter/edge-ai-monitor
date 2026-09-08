@@ -1,12 +1,18 @@
 """Edge AI Monitor.
 
-Main entry point for the Raspberry Pi edge-AI application.
+Raspberry Pi 5 edge-AI object detection using Hailo acceleration.
 """
+
+from detector import run_detector
 
 
 def main():
-    """Start the Edge AI Monitor."""
-    print("Edge AI Monitor starting...")
+    print("=" * 50)
+    print("Edge AI Monitor")
+    print("Hailo accelerated object detection")
+    print("=" * 50)
+
+    run_detector()
 
 
 if __name__ == "__main__":
