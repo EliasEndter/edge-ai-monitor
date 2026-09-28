@@ -1,18 +1,41 @@
 """Edge AI Monitor.
 
-Raspberry Pi 5 edge-AI object detection using Hailo acceleration.
+Supports real Hailo detection on Raspberry Pi
+and mock detection for development on other systems.
 """
 
-from detector import run_detector
+import argparse
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Edge AI Monitor"
+    )
+
+    parser.add_argument(
+        "--mode",
+        choices=["mock", "real"],
+        default="mock",
+        help="Detection mode: mock or real"
+    )
+
+    args = parser.parse_args()
+
     print("=" * 50)
     print("Edge AI Monitor")
-    print("Hailo accelerated object detection")
+    print(f"Mode: {args.mode}")
     print("=" * 50)
 
-    run_detector()
+    if args.mode == "mock":
+        from mock_detector import MockDetector
+
+        detector = MockDetector()
+        detector.run()
+
+    elif args.mode == "real":
+        from detector import run_detector
+
+        run_detector()
 
 
 if __name__ == "__main__":
