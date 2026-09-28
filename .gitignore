@@ -22,3 +22,7 @@ Thumbs.db
 
 # Runtime logs
 logs/
+
+# Local database
+data/
+data/events.db

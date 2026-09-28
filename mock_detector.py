@@ -3,7 +3,7 @@ import time
 from event_logger import EventLogger
 from detection import Detection
 from security_event import SecurityEventHandler
-
+from database import Database
 
 class MockDetector:
     def __init__(self):
@@ -18,6 +18,7 @@ class MockDetector:
 
         self.logger = EventLogger(cooldown=5)
         self.security_handler = SecurityEventHandler()
+        self.database = Database()
 
 
 
@@ -38,7 +39,12 @@ class MockDetector:
                 )
 
                 self.logger.log_detection(detection)
-                self.security_handler.handle_detection(detection)
+                is_security_event = self.security_handler.handle_detection(detection)
+
+                self.database.save_detection(
+                    detection,
+                    is_security_event
+                )
 
                 time.sleep(1)
 
