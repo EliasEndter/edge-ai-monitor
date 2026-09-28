@@ -1,7 +1,6 @@
 import csv
 import os
 import time
-from datetime import datetime
 
 
 class EventLogger:
@@ -13,7 +12,12 @@ class EventLogger:
         os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
 
         if not os.path.exists(self.log_file):
-            with open(self.log_file, "w", newline="", encoding="utf-8") as file:
+            with open(
+                self.log_file,
+                "w",
+                newline="",
+                encoding="utf-8"
+            ) as file:
                 writer = csv.writer(file)
                 writer.writerow([
                     "timestamp",
@@ -21,30 +25,41 @@ class EventLogger:
                     "confidence"
                 ])
 
-    def log_detection(self, label, confidence):
+    def log_detection(self, detection):
         current_time = time.time()
 
-        last_time = self.last_detection.get(label, 0)
+        last_time = self.last_detection.get(
+            detection.label,
+            0
+        )
 
         if current_time - last_time < self.cooldown:
             return False
 
-        self.last_detection[label] = current_time
+        self.last_detection[detection.label] = current_time
 
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = detection.timestamp.strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
-        with open(self.log_file, "a", newline="", encoding="utf-8") as file:
+        with open(
+            self.log_file,
+            "a",
+            newline="",
+            encoding="utf-8"
+        ) as file:
             writer = csv.writer(file)
+
             writer.writerow([
                 timestamp,
-                label,
-                f"{confidence:.3f}"
+                detection.label,
+                f"{detection.confidence:.3f}"
             ])
 
         print(
             f"[EVENT] {timestamp} | "
-            f"{label:<12} | "
-            f"{confidence * 100:.1f}%"
+            f"{detection.label:<12} | "
+            f"{detection.confidence * 100:.1f}%"
         )
 
         return True

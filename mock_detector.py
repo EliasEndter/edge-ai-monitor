@@ -1,6 +1,7 @@
 import random
 import time
 from event_logger import EventLogger
+from detection import Detection
 
 
 class MockDetector:
@@ -25,13 +26,15 @@ class MockDetector:
             while True:
                 label = random.choice(self.objects)
                 confidence = random.uniform(0.60, 0.99)
+                detection = Detection(label, confidence)
+
 
                 print(
                     f"[MOCK] {label:<12} "
                     f"{confidence * 100:5.1f}%"
                 )
 
-                self.logger.log_detection(label, confidence)
+                self.logger.log_detection(detection)
 
                 time.sleep(1)
 
