@@ -2,6 +2,7 @@ import random
 import time
 from event_logger import EventLogger
 from detection import Detection
+from security_event import SecurityEventHandler
 
 
 class MockDetector:
@@ -16,6 +17,8 @@ class MockDetector:
         ]
 
         self.logger = EventLogger(cooldown=5)
+        self.security_handler = SecurityEventHandler()
+
 
 
     def run(self):
@@ -35,6 +38,7 @@ class MockDetector:
                 )
 
                 self.logger.log_detection(detection)
+                self.security_handler.handle_detection(detection)
 
                 time.sleep(1)
 
