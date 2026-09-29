@@ -1,3 +1,6 @@
+import RecentDetections from "@/components/RecentDetections";
+import SecurityEvents from "@/components/SecurityEvents";
+
 type Stats = {
     total_detections: number;
     security_events: number;
@@ -38,11 +41,24 @@ async function getDetections(): Promise<Detection[]> {
 
     return response.json();
 }
+async function getSecurityEvents(): Promise<Detection[]> {
+  const response = await fetch(
+    "http://127.0.0.1:8000/api/security-events",
+    { cache: "no-store" }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load security events");
+  }
+
+  return response.json();
+}
 
 export default async function Home() {
-    const [stats, detections] = await Promise.all([
+    const [stats, detections, securityEvents,] = await Promise.all([
         getStats(),
         getDetections(),
+        getSecurityEvents(),
     ]);
 
     return (
@@ -160,60 +176,12 @@ export default async function Home() {
                     </div>
                 </div>
 
-                <div className="mt-10 overflow-hidden rounded-xl border border-gray-800">
-                    <div className="border-b border-gray-800 px-6 py-5">
-                        <h2 className="text-lg font-semibold">
-                            Recent Detections
-                        </h2>
-                    </div>
+                <SecurityEvents events={securityEvents} />
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="text-sm text-gray-500">
-                            <tr className="border-b border-gray-800">
-                                <th className="px-6 py-4 font-medium">Object</th>
-                                <th className="px-6 py-4 font-medium">Confidence</th>
-                                <th className="px-6 py-4 font-medium">Time</th>
-                                <th className="px-6 py-4 font-medium">Type</th>
-                            </tr>
-                            </thead>
 
-                            <tbody>
-                            {detections.map((detection) => (
-                                <tr
-                                    key={detection.id}
-                                    className="border-b border-gray-900 last:border-0"
-                                >
-                                    <td className="px-6 py-4 font-medium capitalize">
-                                        {detection.label}
-                                    </td>
+                <RecentDetections detections={detections}/>
 
-                                    <td className="px-6 py-4 text-gray-400">
-                                        {(detection.confidence * 100).toFixed(1)}%
-                                    </td>
 
-                                    <td className="px-6 py-4 text-gray-400">
-                                        {new Date(detection.timestamp).toLocaleString()}
-                                    </td>
-
-                                    <td className="px-6 py-4">
-                                        {detection.is_security_event ? (
-                                            <span
-                                                className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400">
-                          Security
-                        </span>
-                                        ) : (
-                                            <span className="rounded-full bg-gray-800 px-3 py-1 text-xs text-gray-400">
-                          Normal
-                        </span>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </main>
     );
