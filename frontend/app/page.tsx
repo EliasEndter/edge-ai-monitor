@@ -29,7 +29,7 @@ async function getStats(): Promise<Stats> {
 
 async function getDetections(): Promise<Detection[]> {
     const response = await fetch(
-        "http://127.0.0.1:8000/api/detections?limit=8",
+        "http://127.0.0.1:8000/api/detections?limit=100",
         {
             cache: "no-store",
         }
