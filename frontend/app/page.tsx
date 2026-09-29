@@ -1,5 +1,7 @@
 import RecentDetections from "@/components/RecentDetections";
 import SecurityEvents from "@/components/SecurityEvents";
+import Analytics from "@/components/Analytics";
+import TopObjects from "@/components/TopObjects";
 
 type Stats = {
     total_detections: number;
@@ -177,7 +179,10 @@ export default async function Home() {
                 </div>
 
                 <SecurityEvents events={securityEvents} />
+                
+                <Analytics detections={detections} />
 
+                <TopObjects detections={detections} />
 
                 <RecentDetections detections={detections}/>
 
