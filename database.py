@@ -44,3 +44,63 @@ class Database:
                     int(is_security_event)
                 )
             )
+
+    def get_detections(self, limit=20):
+        with self.connect() as connection:
+            connection.row_factory = sqlite3.Row
+
+            rows = connection.execute(
+                """
+                SELECT *
+                FROM detections
+                ORDER BY id DESC
+                LIMIT ?
+                """,
+                (limit,)
+            ).fetchall()
+
+            return [dict(row) for row in rows]
+
+    def get_security_events(self, limit=20):
+        with self.connect() as connection:
+            connection.row_factory = sqlite3.Row
+
+            rows = connection.execute(
+                """
+                SELECT *
+                FROM detections
+                WHERE is_security_event = 1
+                ORDER BY id DESC LIMIT ?
+                """,
+                (limit,)
+            ).fetchall()
+
+            return [dict(row) for row in rows]
+
+    def get_stats(self):
+        with self.connect() as connection:
+            total_detections = connection.execute(
+                "SELECT COUNT(*) FROM detections"
+            ).fetchone()[0]
+
+            security_events = connection.execute(
+                """
+                SELECT COUNT(*)
+                FROM detections
+                WHERE is_security_event = 1
+                """
+            ).fetchone()[0]
+
+            person_detections = connection.execute(
+                """
+                SELECT COUNT(*)
+                FROM detections
+                WHERE label = 'person'
+                """
+            ).fetchone()[0]
+
+        return {
+            "total_detections": total_detections,
+            "security_events": security_events,
+            "person_detections": person_detections
+        }
