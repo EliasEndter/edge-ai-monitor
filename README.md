@@ -31,25 +31,25 @@ Currently implemented:
 
 ## Architecture
 
-```text
-Raspberry Pi + Camera
-        |
-        v
-Hailo / YOLO Detection
-        |
-        v
-Detection Processing
-   |             |
-   v             v
-Logging     Security Events
-   |             |
-   +-------> SQLite
-                |
-                v
-             FastAPI
-                |
-                v
-        Next.js Dashboard
+```mermaid
+  graph TD;
+  
+  A([Raspberry Pi + Camera])
+  B([Hailo / YOLO Detection])
+  C([Detection Processing])
+  D([Logging])
+  E([Security Events])
+  F([SQLite])
+  G([FastAPI])
+  H([Next.js Dashboard])
+  A-->B;
+  B-->C;
+  C-->D;
+  C-->E;
+  D-->F;
+  E-->F
+  F-->G
+  G-->H
 ```
 
 ## Hardware

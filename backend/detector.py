@@ -27,22 +27,22 @@ class EdgeAIDetector:
 
         configure_params = ConfigureParams.create_from_hef(
             self.hef,
-            interface=HailoStreamInterface.PCIe
+            interface=HailoStreamInterface.PCIe,
         )
 
         self.network_group = self.device.configure(
             self.hef,
-            configure_params
+            configure_params,
         )[0]
 
         self.input_params = InputVStreamParams.make(
             self.network_group,
-            format_type=FormatType.UINT8
+            format_type=FormatType.UINT8,
         )
 
         self.output_params = OutputVStreamParams.make(
             self.network_group,
-            format_type=FormatType.FLOAT32
+            format_type=FormatType.FLOAT32,
         )
 
         self.input_name = self.hef.get_input_vstream_infos()[0].name
@@ -54,7 +54,7 @@ class EdgeAIDetector:
         camera_config = self.camera.create_preview_configuration(
             main={
                 "size": (640, 640),
-                "format": "RGB888"
+                "format": "RGB888",
             }
         )
 
@@ -71,32 +71,26 @@ class EdgeAIDetector:
             with InferVStreams(
                 self.network_group,
                 self.input_params,
-                self.output_params
+                self.output_params,
             ) as pipeline:
-
                 with self.network_group.activate():
-
                     while True:
                         frame = self.camera.capture_array()
 
-                        # Hailo expects a batch dimension:
-                        # (640, 640, 3) -> (1, 640, 640, 3)
                         input_data = np.expand_dims(frame, axis=0)
 
                         result = pipeline.infer({
-                            self.input_name: input_data
+                            self.input_name: input_data,
                         })
 
                         self.process_results(result)
 
         except KeyboardInterrupt:
             print("\nStopping detector...")
-
         finally:
             self.close()
 
     def process_results(self, result):
-        # Standard COCO class names used by YOLOv8
         coco_classes = [
             "person", "bicycle", "car", "motorcycle", "airplane",
             "bus", "train", "truck", "boat", "traffic light",
@@ -114,15 +108,12 @@ class EdgeAIDetector:
             "laptop", "mouse", "remote", "keyboard", "cell phone",
             "microwave", "oven", "toaster", "sink", "refrigerator",
             "book", "clock", "vase", "scissors", "teddy bear",
-            "hair drier", "toothbrush"
+            "hair drier", "toothbrush",
         ]
 
         confidence_threshold = 0.40
 
-        # One output tensor
         detections = next(iter(result.values()))
-
-        # First batch
         detections = detections[0]
 
         found = []
@@ -132,23 +123,13 @@ class EdgeAIDetector:
                 y_min, x_min, y_max, x_max, confidence = detection
 
                 if confidence >= confidence_threshold:
-                    found.append(
-                        (
-                            coco_classes[class_id],
-                            float(confidence)
-                        )
-                    )
+                    found.append((coco_classes[class_id], float(confidence)))
 
         if found:
             print("\n--- DETECTIONS ---")
 
             for label, confidence in found:
-                print(
-                    f"{label:<15} "
-                    f"{confidence * 100:5.1f}%"
-                )
-    # We inspect the real NMS structure next.
-    # Detection parsing will be added after this works.
+                print(f"{label:<15} {confidence * 100:5.1f}%")
 
     def close(self):
         print("\nClosing camera and Hailo device...")
@@ -163,3 +144,4 @@ class EdgeAIDetector:
 def run_detector():
     detector = EdgeAIDetector()
     detector.run()
+

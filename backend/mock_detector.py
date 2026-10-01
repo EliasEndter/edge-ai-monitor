@@ -1,9 +1,17 @@
 import random
 import time
-from event_logger import EventLogger
-from detection import Detection
-from security_event import SecurityEventHandler
-from database import Database
+
+try:
+    from .detection import Detection
+    from .event_logger import EventLogger
+    from .security_event import SecurityEventHandler
+    from .database import Database
+except ImportError:  # pragma: no cover
+    from detection import Detection
+    from event_logger import EventLogger
+    from security_event import SecurityEventHandler
+    from database import Database
+
 
 class MockDetector:
     def __init__(self):
@@ -20,8 +28,6 @@ class MockDetector:
         self.security_handler = SecurityEventHandler()
         self.database = Database()
 
-
-
     def run(self):
         print("Mock detector started")
         print("Press Ctrl+C to stop.\n")
@@ -32,7 +38,6 @@ class MockDetector:
                 confidence = random.uniform(0.60, 0.99)
                 detection = Detection(label, confidence)
 
-
                 print(
                     f"[MOCK] {label:<12} "
                     f"{confidence * 100:5.1f}%"
@@ -41,10 +46,7 @@ class MockDetector:
                 self.logger.log_detection(detection)
                 is_security_event = self.security_handler.handle_detection(detection)
 
-                self.database.save_detection(
-                    detection,
-                    is_security_event
-                )
+                self.database.save_detection(detection, is_security_event)
 
                 time.sleep(1)
 
@@ -55,3 +57,4 @@ class MockDetector:
 if __name__ == "__main__":
     detector = MockDetector()
     detector.run()
+

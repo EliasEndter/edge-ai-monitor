@@ -8,15 +8,12 @@ import argparse
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Edge AI Monitor"
-    )
-
+    parser = argparse.ArgumentParser(description="Edge AI Monitor")
     parser.add_argument(
         "--mode",
         choices=["mock", "real"],
         default="mock",
-        help="Detection mode: mock or real"
+        help="Detection mode: mock or real",
     )
 
     args = parser.parse_args()
@@ -27,16 +24,20 @@ def main():
     print("=" * 50)
 
     if args.mode == "mock":
-        from mock_detector import MockDetector
-
+        try:
+            from .mock_detector import MockDetector
+        except ImportError:  # pragma: no cover
+            from mock_detector import MockDetector
         detector = MockDetector()
         detector.run()
-
     elif args.mode == "real":
-        from detector import run_detector
-
+        try:
+            from .detector import run_detector
+        except ImportError:  # pragma: no cover
+            from detector import run_detector
         run_detector()
 
 
 if __name__ == "__main__":
     main()
+

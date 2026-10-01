@@ -17,8 +17,13 @@ type Detection = {
     is_security_event: boolean;
 };
 
+const API_BASE_URL =
+    process.env.API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://127.0.0.1:8000";
+
 async function getStats(): Promise<Stats> {
-    const response = await fetch("http://127.0.0.1:8000/api/stats", {
+    const response = await fetch(`${API_BASE_URL}/api/stats`, {
         cache: "no-store",
     });
 
@@ -31,7 +36,7 @@ async function getStats(): Promise<Stats> {
 
 async function getDetections(): Promise<Detection[]> {
     const response = await fetch(
-        "http://127.0.0.1:8000/api/detections?limit=100",
+        `${API_BASE_URL}/api/detections?limit=100`,
         {
             cache: "no-store",
         }
@@ -45,7 +50,7 @@ async function getDetections(): Promise<Detection[]> {
 }
 async function getSecurityEvents(): Promise<Detection[]> {
   const response = await fetch(
-    "http://127.0.0.1:8000/api/security-events",
+    `${API_BASE_URL}/api/security-events`,
     { cache: "no-store" }
   );
 

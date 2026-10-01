@@ -1,8 +1,7 @@
 from datetime import datetime
-
 from pydantic import BaseModel
 
-
+# todo replace with dataclasses
 class DetectionResponse(BaseModel):
     id: int
     timestamp: datetime
@@ -20,3 +19,4 @@ class StatsResponse(BaseModel):
 class StatusResponse(BaseModel):
     name: str
     status: str
+
